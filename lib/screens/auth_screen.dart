@@ -1,7 +1,9 @@
+//import 'dart:html';
 import 'dart:math';
 
 import 'package:elmart/model/user.dart';
 import 'package:elmart/provider/auth_provider.dart';
+import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -106,7 +108,7 @@ class _AuthCardState extends State<AuthCard> {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
-    'name': '',
+    //'name': '',
     'email': '',
     'password': '',
   };
@@ -114,32 +116,43 @@ class _AuthCardState extends State<AuthCard> {
   var _isLoading = false;
   final _passwordController = TextEditingController();
 
-  void _submit() {
+  Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
       // Invalid!
-      return;
+      return false;
     }
     _formKey.currentState.save();
-    setState(() {
-      _isLoading = true;
-    });
+    // setState(() {
+    //   _isLoading = true;
+    // });
     if (_authMode == AuthMode.Login) {
       // Log user in
-    } else {
-      // Sign user up
-      Provider.of<Auth>(context, listen: false).signup(
+      bool signIn = await Provider.of<Auth>(context, listen: false).signIn(
         User(
-          id: int.parse(
-            _authData['password'],
-          ),
-          userName: _authData['name'],
           email: _authData['email'],
+          password: _authData['password'],
         ),
       );
+
+      if (signIn) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (ctx) => SecondScreen()));
+      }
+    } else {
+      // Sign user up
+      await Provider.of<Auth>(context, listen: false)
+          .signup(
+            User(
+              email: _authData['email'],
+              password: _authData['password'],
+            ),
+          )
+          .then((value) => Navigator.of(context)
+              .push(MaterialPageRoute(builder: (ctx) => SecondScreen())));
     }
-    setState(() {
-      _isLoading = false;
-    });
+    // setState(() {
+    //   _isLoading = false;
+    // });
   }
 
   void _switchAuthMode() {
@@ -173,19 +186,19 @@ class _AuthCardState extends State<AuthCard> {
           child: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Name'),
-                    keyboardType: TextInputType.text,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Invalid name!';
-                      }
-                    },
-                    onSaved: (value) {
-                      _authData['name'] = value;
-                    },
-                  ),
+                // if (_authMode == AuthMode.Signup)
+                //   TextFormField(
+                //     decoration: InputDecoration(labelText: 'Name'),
+                //     keyboardType: TextInputType.text,
+                //     validator: (value) {
+                //       if (value.isEmpty) {
+                //         return 'Invalid name!';
+                //       }
+                //     },
+                //     onSaved: (value) {
+                //       _authData['name'] = value;
+                //     },
+                //   ),
                 TextFormField(
                   decoration: InputDecoration(labelText: 'E-Mail'),
                   keyboardType: TextInputType.emailAddress,
