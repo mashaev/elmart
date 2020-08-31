@@ -1,11 +1,17 @@
 import 'package:elmart/screens/auth_screen.dart';
 import 'package:elmart/screens/first_screen.dart';
+import 'package:elmart/screens/second_screen.dart';
+//import 'package:elmart/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'provider/auth_provider.dart';
+import 'resourses/session.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  session = await SharedPreferences.getInstance();
   runApp(MyApp());
 }
 
@@ -24,7 +30,22 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: FirstScreen(),
-        routes: <String, WidgetBuilder>{
+        routes: {
+          SecondScreen.routeName: (ctx) => Consumer<Auth>(
+              builder: (ctx, auth, _) => auth.getToken != null
+                  ? SecondScreen()
+                  : FutureBuilder(
+                      future: auth.tryAutoLogin(),
+                      builder: (ctx, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return CircularProgressIndicator();
+                        }
+
+                        return snapshot.data ? SecondScreen() : AuthScreen();
+                      }
+                      // child: AuthScreen()
+                      )),
           // '/first': (ctx) => FirstScreen(),
           // '/auth': (ctx) => AuthScreen(),
         },

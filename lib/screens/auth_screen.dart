@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:elmart/model/user.dart';
 import 'package:elmart/provider/auth_provider.dart';
+import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -140,15 +141,22 @@ class _AuthCardState extends State<AuthCard> {
       }
     } else {
       // Sign user up
-      await Provider.of<Auth>(context, listen: false)
-          .signup(
-            User(
-              email: _authData['email'],
-              password: _authData['password'],
-            ),
-          )
-          .then((value) => Navigator.of(context)
-              .push(MaterialPageRoute(builder: (ctx) => SecondScreen())));
+      bool register = await Provider.of<Auth>(context, listen: false).signup(
+        User(
+          email: _authData['email'],
+          password: _authData['password'],
+        ),
+      );
+
+      if (register) {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (ctx) => SecondScreen()));
+        cprint('IF BLOC SIGN UP-----------');
+      } else {
+        Navigator.of(context)
+            .push(MaterialPageRoute(builder: (ctx) => AuthScreen()));
+        cprint('ELSE BLOC SIGN UP-----------');
+      }
     }
     // setState(() {
     //   _isLoading = false;

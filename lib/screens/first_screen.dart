@@ -1,7 +1,11 @@
 //import 'dart:html';
 
+import 'package:elmart/provider/auth_provider.dart';
+import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/auth_screen.dart';
+import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FirstScreen extends StatefulWidget {
   static const routeName = '/first';
@@ -21,8 +25,7 @@ class _FirstScreenState extends State<FirstScreen> {
               accountName: Text('Tima'),
               accountEmail: Text('mashaev@mail.ru'),
               onDetailsPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (ctx) => AuthScreen()));
+                Navigator.of(context).pushNamed(SecondScreen.routeName);
               },
             ),
             // Row(
