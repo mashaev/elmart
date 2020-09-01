@@ -12,6 +12,7 @@ class Auth with ChangeNotifier {
   String name;
   String email;
   String token;
+  // bool loginExists;
 
   Future<bool> signup(User user) async {
     const url = 'https://khanbuyer.ml/api/user/register';
@@ -44,21 +45,6 @@ class Auth with ChangeNotifier {
         cprint('RegisterDataId------$id');
       }
       notifyListeners();
-
-      // final prefs = await SharedPreferences.getInstance();
-
-      // final data = json.encode({
-      //   'id': id,
-      //   'email': email,
-      //   'name': name,
-      //   'tokenVal': token,
-      // });
-
-      // prefs.setString('userData', data);
-
-      // final extractData = json.decode(prefs.getString('userData'));
-
-      // cprint('sharedPref------${extractData['tokenVal']}');
 
       return true;
     } catch (e) {
@@ -123,6 +109,45 @@ class Auth with ChangeNotifier {
       return true;
     } catch (e) {
       cprint('FUCCKK-----------$e');
+      print(e);
+    }
+    return false;
+  }
+
+  Future<bool> changePassword(User user) async {
+    const url = 'https://khanbuyer.ml/api/user/request-recovery-message';
+
+    // String basicAuth =
+    //     'Basic ' + base64Encode(utf8.encode('${user.email}:${user.password}'));
+    // print(basicAuth);
+
+    try {
+      final response = await http.post(url, body: {
+        'email': user.email,
+      });
+      final responseData = json.decode(response.body);
+      cprint('signup responseData $responseData');
+      if (responseData == null) {
+        return false;
+      }
+
+      // if (responseData.containsKey('user')) {
+      //   Map respUser = responseData['user'];
+      //   id = respUser['id'];
+      //   name = respUser['username'];
+      //   token = respUser['auth_key'];
+      //   email = respUser['email'];
+      //   cprint('IF SESSION REGISTER');
+      //   saveUserSession(respUser);
+      //   cprint('RegisterData------${respUser['auth_key']}');
+      //   cprint('RegisterData------${respUser['id']}');
+      //   cprint('RegisterDataToken------$token');
+      //   cprint('RegisterDataId------$id');
+      // }
+      notifyListeners();
+
+      return true;
+    } catch (e) {
       print(e);
     }
     return false;
