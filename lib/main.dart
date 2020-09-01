@@ -31,21 +31,8 @@ class MyApp extends StatelessWidget {
         ),
         home: FirstScreen(),
         routes: {
-          SecondScreen.routeName: (ctx) => Consumer<Auth>(
-              builder: (ctx, auth, _) => auth.getToken != null
-                  ? SecondScreen()
-                  : FutureBuilder(
-                      future: auth.tryAutoLogin(),
-                      builder: (ctx, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return CircularProgressIndicator();
-                        }
-
-                        return snapshot.data ? SecondScreen() : AuthScreen();
-                      }
-                      // child: AuthScreen()
-                      )),
+          SecondScreen.routeName: (ctx) => SecondScreen(),
+          '/auth': (ctx) => AuthScreen(),
           // '/first': (ctx) => FirstScreen(),
           // '/auth': (ctx) => AuthScreen(),
         },

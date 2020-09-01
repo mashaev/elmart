@@ -25,7 +25,11 @@ class _FirstScreenState extends State<FirstScreen> {
               accountName: Text('Tima'),
               accountEmail: Text('mashaev@mail.ru'),
               onDetailsPressed: () {
-                Navigator.of(context).pushNamed(SecondScreen.routeName);
+                if (session.containsKey('userId')) {
+                  Navigator.of(context).pushNamed(SecondScreen.routeName);
+                } else {
+                  Navigator.of(context).pushNamed('/auth');
+                }
               },
             ),
             // Row(

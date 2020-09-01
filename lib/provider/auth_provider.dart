@@ -5,7 +5,7 @@ import 'package:elmart/model/user.dart';
 import 'package:elmart/resourses/session.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   int id;
@@ -25,33 +25,40 @@ class Auth with ChangeNotifier {
         'email': user.email,
         'password': user.password,
       });
-      final responseData = json.decode(response.body);
+      final Map responseData = json.decode(response.body);
       cprint('signup responseData $responseData');
       if (responseData == null) {
         return false;
       }
-      id = responseData['id'];
-      name = responseData['username'];
-      token = responseData['auth_key'];
-      email = responseData['email'];
-      cprint('RegisterData------${responseData['auth_key']}');
-      cprint('RegisterData------${responseData['username']}');
+      if (responseData.containsKey('user')) {
+        Map respUser = responseData['user'];
+        id = respUser['id'];
+        name = respUser['username'];
+        token = respUser['auth_key'];
+        email = respUser['email'];
+        cprint('IF SESSION REGISTER');
+        saveUserSession(respUser);
+        cprint('RegisterData------${respUser['auth_key']}');
+        cprint('RegisterData------${respUser['id']}');
+        cprint('RegisterDataToken------$token');
+        cprint('RegisterDataId------$id');
+      }
       notifyListeners();
 
-      final prefs = await SharedPreferences.getInstance();
+      // final prefs = await SharedPreferences.getInstance();
 
-      final data = json.encode({
-        'id': id,
-        'email': email,
-        'name': name,
-        'tokenVal': token,
-      });
+      // final data = json.encode({
+      //   'id': id,
+      //   'email': email,
+      //   'name': name,
+      //   'tokenVal': token,
+      // });
 
-      prefs.setString('userData', data);
+      // prefs.setString('userData', data);
 
-      final extractData = json.decode(prefs.getString('userData'));
+      // final extractData = json.decode(prefs.getString('userData'));
 
-      cprint('sharedPref------${extractData['tokenVal']}');
+      // cprint('sharedPref------${extractData['tokenVal']}');
 
       return true;
     } catch (e) {
@@ -85,11 +92,15 @@ class Auth with ChangeNotifier {
       final response = await http
           .post(url, headers: {HttpHeaders.authorizationHeader: basicAuth});
 
-      final responseData = json.decode(response.body);
+      final Map responseData = json.decode(response.body);
+      cprint('signin responseData $responseData');
       id = responseData['id'];
       name = responseData['username'];
       token = responseData['auth_key'];
       email = responseData['email'];
+      if (responseData.containsKey('id')) {
+        saveUserSession(responseData);
+      }
 
       cprint('LoginData------${responseData['auth_key']}');
       cprint('LoginData------${responseData['username']}');
@@ -97,17 +108,17 @@ class Auth with ChangeNotifier {
       notifyListeners();
       //  final prefs = await SharedPreferences.getInstance();
 
-      final data = json.encode({
-        'id': id,
-        'email': email,
-        'name': name,
-        'tokenVal': token,
-      });
+      // final data = json.encode({
+      //   'id': id,
+      //   'email': email,
+      //   'name': name,
+      //   'tokenVal': token,
+      // });
 
-      session.setString('userData', data);
-      final extractData = json.decode(session.getString('userData'));
+      // session.setString('userData', data);
+      // final extractData = json.decode(session.getString('userData'));
 
-      cprint('sharedPref------${extractData['tokenVal']}');
+      // cprint('sharedPref------${extractData['tokenVal']}');
 
       return true;
     } catch (e) {
@@ -117,21 +128,29 @@ class Auth with ChangeNotifier {
     return false;
   }
 
-  Future<bool> tryAutoLogin() async {
-    // final prefs = await SharedPreferences.getInstance();
-
-    if (!session.containsKey('userData')) {
-      return false;
-    }
-
-    final extractData = json.decode(session.getString('userData'));
-    token = extractData['tokenVal'];
-    cprint(
-        'tryAutoLogin------ $token-------TRY---- ${extractData['tokenVal']}');
-    notifyListeners();
-
-    return true;
+  void saveUserSession(Map responseData) {
+    session.setInt('userId', responseData['id']);
+    session.setString('username', responseData['username']);
+    session.setString('authKey', responseData['auth_key']);
+    session.setString('email', responseData['email']);
+    cprint('SAVE SESSION SHARED -----${session.getInt('userId')}');
   }
+
+  // Future<bool> tryAutoLogin() async {
+  //   // final prefs = await SharedPreferences.getInstance();
+
+  //   if (!session.containsKey('userData')) {
+  //     return false;
+  //   }
+
+  //   final extractData = json.decode(session.getString('userData'));
+  //   token = extractData['tokenVal'];
+  //   cprint(
+  //       'tryAutoLogin------ $token-------TRY---- ${extractData['tokenVal']}');
+  //   notifyListeners();
+
+  //   return true;
+  // }
 
   logout() {
     //  final prefs = await SharedPreferences.getInstance();

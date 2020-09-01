@@ -136,8 +136,8 @@ class _AuthCardState extends State<AuthCard> {
       );
 
       if (signIn) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (ctx) => SecondScreen()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (ctx) => SecondScreen()));
       }
     } else {
       // Sign user up
@@ -149,8 +149,8 @@ class _AuthCardState extends State<AuthCard> {
       );
 
       if (register) {
-        Navigator.of(context)
-            .push(MaterialPageRoute(builder: (ctx) => SecondScreen()));
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (ctx) => SecondScreen()));
         cprint('IF BLOC SIGN UP-----------');
       } else {
         Navigator.of(context)
