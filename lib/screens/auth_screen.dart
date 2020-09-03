@@ -20,14 +20,15 @@ class AuthScreen extends StatelessWidget {
     // transformConfig.translate(-10.0);
     return Scaffold(
       appBar: AppBar(
-          // actions: [
-          //   IconButton(
-          //       icon: Icon(Icons.backup),
-          //       onPressed: () {
-          //         Navigator.of(context).pop();
-          //       })
-          // ],
-          ),
+        automaticallyImplyLeading: true,
+        // actions: [
+        //   IconButton(
+        //       icon: Icon(Icons.backup),
+        //       onPressed: () {
+        //         Navigator.of(context).pop();
+        //       })
+        // ],
+      ),
       // resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
@@ -219,7 +220,7 @@ class _AuthCardState extends State<AuthCard> {
         cprint('IF BLOC SIGN UP-----------');
       } else {
         Navigator.of(context)
-            .push(MaterialPageRoute(builder: (ctx) => AuthScreen()));
+            .pushReplacement(MaterialPageRoute(builder: (ctx) => AuthScreen()));
         cprint('ELSE BLOC SIGN UP-----------');
       }
     }

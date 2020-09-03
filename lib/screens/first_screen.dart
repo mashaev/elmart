@@ -1,8 +1,7 @@
 //import 'dart:html';
 
-import 'package:elmart/provider/auth_provider.dart';
+import 'package:elmart/provider/product_provider.dart';
 import 'package:elmart/resourses/session.dart';
-import 'package:elmart/screens/auth_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -55,6 +54,12 @@ class _FirstScreenState extends State<FirstScreen> {
               'j',
               style: Theme.of(context).textTheme.headline4,
             ),
+            RaisedButton(
+                child: Text('Button'),
+                onPressed: () async {
+                  await Provider.of<Products>(context, listen: false)
+                      .getProduct();
+                }),
           ],
         ),
       ),

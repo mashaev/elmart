@@ -1,3 +1,4 @@
+import 'package:elmart/provider/product_provider.dart';
 import 'package:elmart/screens/auth_screen.dart';
 import 'package:elmart/screens/first_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (_) => Auth()),
+        ChangeNotifierProvider<Products>(create: (_) => Products()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
