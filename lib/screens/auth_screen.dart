@@ -223,9 +223,169 @@ class _AuthCardState extends State<AuthCard> {
     }
   }
 
+  Column textFieldSignIn() {
+    return Column(
+      children: [
+        TextFormField(
+          decoration: InputDecoration(labelText: 'E-Mail'),
+          keyboardType: TextInputType.emailAddress,
+          validator: (value) {
+            if (value.isEmpty || !value.contains('@')) {
+              return 'Invalid email!';
+            }
+          },
+          onSaved: (value) {
+            _authData['email'] = value;
+          },
+        ),
+        TextFormField(
+          decoration: InputDecoration(labelText: 'Password'),
+          obscureText: true,
+          controller: _passwordController,
+          validator: (value) {
+            if (value.isEmpty || value.length < 5) {
+              return 'Password is too short!';
+            }
+          },
+          onSaved: (value) {
+            _authData['password'] = value;
+          },
+        ),
+        if (_authMode == AuthMode.Signup)
+          TextFormField(
+            enabled: _authMode == AuthMode.Signup,
+            decoration: InputDecoration(labelText: 'Confirm Password'),
+            obscureText: true,
+            validator: _authMode == AuthMode.Signup
+                ? (value) {
+                    if (value != _passwordController.text) {
+                      return 'Passwords do not match!';
+                    }
+                  }
+                : null,
+          ),
+        buttonSignIn(),
+      ],
+    );
+  }
+
+  textFieldReset() {
+    return Column(
+      children: [
+        TextFormField(
+          decoration: InputDecoration(labelText: 'Email'),
+          keyboardType: TextInputType.text,
+          validator: (value) {
+            if (value.isEmpty) {
+              return 'Invalid name!';
+            }
+          },
+          onSaved: (value) {
+            _authData['email'] = value;
+          },
+        ),
+        RaisedButton(
+          child: Text(_authMode == AuthMode.Login ? 'LOGIN' : 'Reset'),
+          onPressed: _submit,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+          color: Theme.of(context).primaryColor,
+          textColor: Theme.of(context).primaryTextTheme.button.color,
+        ),
+        FlatButton(
+          child: Text(
+              '${_authMode == AuthMode.Reset ? 'Back to login' : 'login'} '),
+          onPressed: _switchChangePassword,
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textColor: Theme.of(context).primaryColor,
+        ),
+      ],
+    );
+  }
+
+  textFieldCode() {
+    return Column(
+      children: [
+        TextFormField(
+          controller: _codeTC,
+          decoration: InputDecoration(labelText: 'Code'),
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value.isEmpty || value.length < 5) {
+              return 'Invalid code!';
+            }
+          },
+          onSaved: (value) {
+            codeNumber = int.parse(value);
+          },
+        ),
+        RaisedButton(
+          child: Text(_authMode == AuthMode.Code ? 'Code' : 'Reset'),
+          onPressed: _submit,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+          color: Theme.of(context).primaryColor,
+          textColor: Theme.of(context).primaryTextTheme.button.color,
+        ),
+        FlatButton(
+          child:
+              Text('${_authMode == AuthMode.Code ? 'Back to Email' : 'Code'} '),
+          onPressed: _switchCode,
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textColor: Theme.of(context).primaryColor,
+        ),
+      ],
+    );
+  }
+
+  buttonSignIn() {
+    return Column(
+      children: [
+        RaisedButton(
+          child: Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
+          onPressed: _submit,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+          color: Theme.of(context).primaryColor,
+          textColor: Theme.of(context).primaryTextTheme.button.color,
+        ),
+        FlatButton(
+          child: Text(
+              '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
+          onPressed: _switchAuthMode,
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          textColor: Theme.of(context).primaryColor,
+        ),
+        if (_authMode == AuthMode.Login)
+          FlatButton(
+            child: Text(
+                '${_authMode == AuthMode.Login ? 'Change Password' : 'login'} '),
+            onPressed: _switchChangePassword,
+            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            textColor: Theme.of(context).primaryColor,
+          ),
+      ],
+    );
+  }
+
+  // List<Widget> children = [];
+  //   if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
+  //     children.add(textFieldSignIn());
+
   @override
   Widget build(BuildContext context) {
     final deviceSize = MediaQuery.of(context).size;
+
     return Card(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10.0),
@@ -243,155 +403,16 @@ class _AuthCardState extends State<AuthCard> {
             child: Column(
               children: <Widget>[
                 if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'E-Mail'),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (value) {
-                      if (value.isEmpty || !value.contains('@')) {
-                        return 'Invalid email!';
-                      }
-                    },
-                    onSaved: (value) {
-                      _authData['email'] = value;
-                    },
-                  ),
-                if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                    controller: _passwordController,
-                    validator: (value) {
-                      if (value.isEmpty || value.length < 5) {
-                        return 'Password is too short!';
-                      }
-                    },
-                    onSaved: (value) {
-                      _authData['password'] = value;
-                    },
-                  ),
-                if (_authMode == AuthMode.Reset)
-                  TextFormField(
-                    decoration: InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.text,
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return 'Invalid name!';
-                      }
-                    },
-                    onSaved: (value) {
-                      _authData['email'] = value;
-                    },
-                  ),
-                if (_authMode == AuthMode.Code)
-                  TextFormField(
-                    controller: _codeTC,
-                    decoration: InputDecoration(labelText: 'Code'),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value.isEmpty || value.length < 5) {
-                        return 'Invalid code!';
-                      }
-                    },
-                    onSaved: (value) {
-                      codeNumber = int.parse(value);
-                    },
-                  ),
-                if (_authMode == AuthMode.Signup)
-                  TextFormField(
-                    enabled: _authMode == AuthMode.Signup,
-                    decoration: InputDecoration(labelText: 'Confirm Password'),
-                    obscureText: true,
-                    validator: _authMode == AuthMode.Signup
-                        ? (value) {
-                            if (value != _passwordController.text) {
-                              return 'Passwords do not match!';
-                            }
-                          }
-                        : null,
-                  ),
+                  textFieldSignIn(),
+                if (_authMode == AuthMode.Reset) textFieldReset(),
+                if (_authMode == AuthMode.Code) textFieldCode(),
                 SizedBox(
                   height: 20,
                 ),
-                if (_isLoading)
-                  CircularProgressIndicator()
-                else if (_authMode == AuthMode.Reset)
-                  RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'Reset'),
-                    onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
-                  ),
-                if (_authMode == AuthMode.Code)
-                  RaisedButton(
-                    child: Text(_authMode == AuthMode.Code ? 'Code' : 'Reset'),
-                    onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
-                  ),
-                if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
-                  RaisedButton(
-                    child:
-                        Text(_authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'),
-                    onPressed: _submit,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
-                    color: Theme.of(context).primaryColor,
-                    textColor: Theme.of(context).primaryTextTheme.button.color,
-                  ),
-                if (_authMode == AuthMode.Login || _authMode == AuthMode.Signup)
-                  FlatButton(
-                    child: Text(
-                        '${_authMode == AuthMode.Login ? 'SIGNUP' : 'LOGIN'} INSTEAD'),
-                    onPressed: _switchAuthMode,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textColor: Theme.of(context).primaryColor,
-                  ),
-                if (_authMode == AuthMode.Login)
-                  FlatButton(
-                    child: Text(
-                        '${_authMode == AuthMode.Login ? 'Change Password' : 'login'} '),
-                    onPressed: _switchChangePassword,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textColor: Theme.of(context).primaryColor,
-                  ),
-                if (_authMode == AuthMode.Reset)
-                  FlatButton(
-                    child: Text(
-                        '${_authMode == AuthMode.Reset ? 'Back to login' : 'login'} '),
-                    onPressed: _switchChangePassword,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textColor: Theme.of(context).primaryColor,
-                  ),
-                if (_authMode == AuthMode.Code)
-                  FlatButton(
-                    child: Text(
-                        '${_authMode == AuthMode.Code ? 'Back to Email' : 'Code'} '),
-                    onPressed: _switchCode,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 30.0, vertical: 4),
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    textColor: Theme.of(context).primaryColor,
-                  ),
+                if (_isLoading) CircularProgressIndicator()
+                // else
+                //  if (_authMode == AuthMode.Code)
+                //   textFieldCode(),
               ],
             ),
           ),
