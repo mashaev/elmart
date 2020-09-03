@@ -8,7 +8,7 @@ import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-enum AuthMode { Signup, Login, Reset, Code }
+enum AuthMode { Signup, Login, Reset, Code, NewPassword }
 
 class AuthScreen extends StatelessWidget {
   static const routeName = '/auth';
@@ -114,11 +114,45 @@ class _AuthCardState extends State<AuthCard> {
     'password': '',
   };
 
-  int codeNumber;
+  int _codeNumber;
   // User user =User(_authData['']);
   var _isLoading = false;
+  bool _obscureText = true;
+  bool _obscureText2 = true;
   final _passwordController = TextEditingController();
   final TextEditingController _codeTC = TextEditingController();
+
+  Future<void> _submitCode() async {
+    if (!_formKey.currentState.validate()) {
+      // Invalid!
+      return false;
+    }
+    _formKey.currentState.save();
+    if (_authMode == AuthMode.Code) {
+      bool confirmCode =
+          await Provider.of<Auth>(context, listen: false).sendCode(_codeNumber);
+
+      if (confirmCode) {
+        setState(() {
+          // changePwd = false;
+          _authMode = AuthMode.NewPassword;
+
+          // changePwd = false;
+        });
+      } else {
+        cprint('Invalid CODE CONFIRM----------');
+      }
+    } else if (_authMode == AuthMode.NewPassword) {
+      bool confirmNewPassword = await Provider.of<Auth>(context, listen: false)
+          .sendNewPassword(_codeNumber, _authData['password']);
+      if (confirmNewPassword) {
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (ctx) => AuthScreen()));
+      } else {
+        cprint('Invalid NewPassword CONFIRM----------');
+      }
+    }
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -141,6 +175,9 @@ class _AuthCardState extends State<AuthCard> {
       if (signIn) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (ctx) => SecondScreen()));
+      } else {
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (ctx) => AuthScreen()));
       }
     } else if (_authMode == AuthMode.Reset) {
       //reset button press
@@ -171,7 +208,11 @@ class _AuthCardState extends State<AuthCard> {
           password: _authData['password'],
         ),
       );
-
+      // if (!register) {
+      //   Navigator.of(context)
+      //       .pushReplacement(MaterialPageRoute(builder: (ctx) => AuthScreen()));
+      //   cprint('IF BLOC SIGN UP-----------');
+      // }
       if (register) {
         Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (ctx) => SecondScreen()));
@@ -223,6 +264,77 @@ class _AuthCardState extends State<AuthCard> {
     }
   }
 
+  void toggleObscure() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  void toggleObscureSecond() {
+    setState(() {
+      _obscureText2 = !_obscureText2;
+    });
+  }
+
+  Column newPasswordField() {
+    return Column(
+      children: [
+        TextFormField(
+          decoration: InputDecoration(
+            labelText: 'Password',
+            suffixIcon: IconButton(
+                icon: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off),
+                onPressed: toggleObscure),
+          ),
+          obscureText: _obscureText,
+          controller: _passwordController,
+          validator: (value) {
+            if (value.isEmpty || value.length < 5) {
+              return 'Password is too short!';
+            }
+          },
+          onSaved: (value) {
+            _authData['password'] = value;
+          },
+        ),
+        TextFormField(
+          enabled: _authMode == AuthMode.NewPassword,
+          decoration: InputDecoration(
+            labelText: 'Confirm Password',
+            suffixIcon: IconButton(
+                icon: Icon(
+                    _obscureText2 ? Icons.visibility : Icons.visibility_off),
+                onPressed: toggleObscureSecond),
+          ),
+          obscureText: _obscureText2,
+          validator: _authMode == AuthMode.NewPassword
+              ? (value) {
+                  if (value != _passwordController.text) {
+                    return 'Passwords do not match!';
+                  }
+                }
+              : null,
+        ),
+        SizedBox(
+          height: 20,
+        ),
+        RaisedButton(
+          child: Text(
+              // _authMode == AuthMode.Login ? 'LOGIN' : 'SIGN UP'
+              'Change Pwd'),
+          onPressed: _submitCode,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
+          color: Theme.of(context).primaryColor,
+          textColor: Theme.of(context).primaryTextTheme.button.color,
+        ),
+      ],
+    );
+  }
+
   Column textFieldSignIn() {
     return Column(
       children: [
@@ -239,8 +351,14 @@ class _AuthCardState extends State<AuthCard> {
           },
         ),
         TextFormField(
-          decoration: InputDecoration(labelText: 'Password'),
-          obscureText: true,
+          decoration: InputDecoration(
+            labelText: 'Password',
+            suffixIcon: IconButton(
+                icon: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off),
+                onPressed: toggleObscure),
+          ),
+          obscureText: _obscureText,
           controller: _passwordController,
           validator: (value) {
             if (value.isEmpty || value.length < 5) {
@@ -254,8 +372,14 @@ class _AuthCardState extends State<AuthCard> {
         if (_authMode == AuthMode.Signup)
           TextFormField(
             enabled: _authMode == AuthMode.Signup,
-            decoration: InputDecoration(labelText: 'Confirm Password'),
-            obscureText: true,
+            decoration: InputDecoration(
+              labelText: 'Confirm Password',
+              suffixIcon: IconButton(
+                  icon: Icon(
+                      _obscureText2 ? Icons.visibility : Icons.visibility_off),
+                  onPressed: toggleObscureSecond),
+            ),
+            obscureText: _obscureText2,
             validator: _authMode == AuthMode.Signup
                 ? (value) {
                     if (value != _passwordController.text) {
@@ -314,17 +438,19 @@ class _AuthCardState extends State<AuthCard> {
           decoration: InputDecoration(labelText: 'Code'),
           keyboardType: TextInputType.number,
           validator: (value) {
-            if (value.isEmpty || value.length < 5) {
+            if (value.isEmpty || value.length > 5) {
               return 'Invalid code!';
             }
+            return null;
           },
           onSaved: (value) {
-            codeNumber = int.parse(value);
+            _codeNumber = int.parse(value);
+            cprint('Saved $_codeNumber');
           },
         ),
         RaisedButton(
           child: Text(_authMode == AuthMode.Code ? 'Code' : 'Reset'),
-          onPressed: _submit,
+          onPressed: _submitCode,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
@@ -406,6 +532,7 @@ class _AuthCardState extends State<AuthCard> {
                   textFieldSignIn(),
                 if (_authMode == AuthMode.Reset) textFieldReset(),
                 if (_authMode == AuthMode.Code) textFieldCode(),
+                if (_authMode == AuthMode.NewPassword) newPasswordField(),
                 SizedBox(
                   height: 20,
                 ),

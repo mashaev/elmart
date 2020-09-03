@@ -28,7 +28,7 @@ class Auth with ChangeNotifier {
       });
       final Map responseData = json.decode(response.body);
       cprint('signup responseData $responseData');
-      if (responseData == null) {
+      if (!responseData['success']) {
         return false;
       }
       if (responseData.containsKey('user')) {
@@ -148,7 +148,62 @@ class Auth with ChangeNotifier {
 
       return true;
     } catch (e) {
-      print(e);
+      print('changePassword error:  ' + e);
+    }
+    return false;
+  }
+
+  Future<bool> sendCode(int codeVal) async {
+    const url = 'https://khanbuyer.ml/api/user/check-confirmation-code';
+
+    // String basicAuth =
+    //     'Basic ' + base64Encode(utf8.encode('${user.email}:${user.password}'));
+    // print(basicAuth);
+    cprint('Saved code here Timur $codeVal');
+    try {
+      final response = await http.post(url, body: {
+        'code': codeVal.toString(),
+      });
+      final responseData = json.decode(response.body);
+      cprint('Code responseData ${responseData['success']}');
+      if (responseData == null) {
+        cprint('Code null responseData ${responseData['code']}');
+        return false;
+      }
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      print('sendCode error: ' + e);
+    }
+    return false;
+  }
+
+  Future<bool> sendNewPassword(int codeVal, String pwd) async {
+    const url = 'https://khanbuyer.ml/api/user/reset-password';
+
+    // String basicAuth =
+    //     'Basic ' + base64Encode(utf8.encode('${user.email}:${user.password}'));
+    // print(basicAuth);
+    cprint('Saved code here Timur $codeVal');
+    try {
+      final response = await http.post(url, body: {
+        'code': codeVal.toString(),
+        'password': pwd,
+      });
+      final responseData = json.decode(response.body);
+      cprint('NewPassword responseData ${responseData['success']}');
+      if (responseData == null) {
+        cprint('NewPassword null responseData ${responseData['code']}');
+        return false;
+      }
+
+      notifyListeners();
+
+      return true;
+    } catch (e) {
+      print('sendNewPassword error: ' + e);
     }
     return false;
   }
