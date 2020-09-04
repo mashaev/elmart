@@ -24,6 +24,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<Auth>(create: (_) => Auth()),
         ChangeNotifierProvider<Products>(create: (_) => Products()),
+        // ChangeNotifierProvider<ConnectivityProvider>(
+        //     create: (_) => ConnectivityProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

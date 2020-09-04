@@ -74,8 +74,8 @@ class Product {
         inStock: json["in_stock"],
         createdAt: json["created_at"],
         updatedAt: json["updated_at"],
-        picture: json["picture"],
-        thumbnailPicture: json["thumbnailPicture"],
+        picture: 'https://khanbuyer.ml' + json["picture"],
+        thumbnailPicture: 'https://khanbuyer.ml' + json["thumbnailPicture"],
       );
 
   Map<String, dynamic> toMap() => {
