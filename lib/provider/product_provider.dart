@@ -6,13 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:data_connection_checker/data_connection_checker.dart';
 
-class Products with ChangeNotifier {
+class ProductProvider with ChangeNotifier {
   List<Product> loadedPost = [];
 
   int page = 1;
   int perPage = 8;
   int pageCount;
   bool hasInternet = false;
+  int totalItem = 0;
 
   incrementPage() {
     page++;
@@ -37,10 +38,13 @@ class Products with ChangeNotifier {
       response.headers.forEach((name, values) {
         if (name == 'x-pagination-page-count') {
           pageCount = int.parse(values[0]);
-        } else if (name == 'x-pagination-current-page') {
-          //xCurrentPage = int.parse(values[0]);
-          //xNextPage = xCurrentPage + 1;
+        } else if (name == 'x-pagination-total-count') {
+          totalItem = int.parse(values);
         }
+        //  else if (name == 'x-pagination-current-page') {
+        //   //xCurrentPage = int.parse(values[0]);
+        //   //xNextPage = xCurrentPage + 1;
+        // }
       });
 
       cprint('getProduct responseData $responseData');
@@ -49,10 +53,9 @@ class Products with ChangeNotifier {
           resultList.map((prod) => Product.fromMap(prod)).toList();
       cprint('getProduct products $products');
       loadedPost.addAll(products);
-      notifyListeners();
-      // return products;
-
-      // return true;
+      Future.delayed(Duration(seconds: 2), () {
+        notifyListeners();
+      });
     } catch (e) {
       print('getProduct error:  ' + e);
     }

@@ -1,13 +1,9 @@
-//import 'dart:html';
-
-import 'dart:async';
-
-import 'package:elmart/model/product.dart';
 import 'package:elmart/provider/product_provider.dart';
 import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:elmart/widgets/product_item.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
 class FirstScreen extends StatefulWidget {
@@ -19,7 +15,8 @@ class FirstScreen extends StatefulWidget {
 
 class _FirstScreenState extends State<FirstScreen> {
   ScrollController _scrollController = ScrollController();
-  Products prodProv;
+  ProductProvider prodProv;
+  var endOfPage = false;
 
   // checkInternet() {
   //  // Provider.of<ConnectivityProvider>(context, listen: false).methodCheck();
@@ -53,7 +50,7 @@ class _FirstScreenState extends State<FirstScreen> {
   @override
   void initState() {
     super.initState();
-    prodProv = Provider.of<Products>(context, listen: false);
+    prodProv = Provider.of<ProductProvider>(context, listen: false);
     // checkInternet();
 
     _scrollController.addListener(() {
@@ -76,7 +73,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Products prodProv = Provider.of<Products>(
+    ProductProvider prodProv = Provider.of<ProductProvider>(
       context,
     );
 
@@ -121,11 +118,34 @@ class _FirstScreenState extends State<FirstScreen> {
         child: prodProv.hasInternet
             ? GridView.builder(
                 controller: _scrollController,
-                itemCount: prodProv.loadedPost.length,
+                itemCount: prodProv.loadedPost.length + 1,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),
                 itemBuilder: (ctx, index) {
-                  return ProductItem(product: prodProv.loadedPost[index]);
+                  cprint('index-----$index');
+                  if (prodProv.totalItem == index) {
+                    cprint('no more itemData');
+                    return Center(
+                      child: Text('no more itemData bro'),
+                    );
+                  }
+
+                  if (index <= prodProv.loadedPost.length - 1) {
+                    cprint('Total itemData ${prodProv.totalItem}');
+                    cprint(
+                        'Total Loaded itemData ${prodProv.loadedPost.length}');
+                    return ProductItem(product: prodProv.loadedPost[index]);
+                  }
+                  if (index == prodProv.loadedPost.length) {
+                    return SpinKitThreeBounce(
+                      color: Colors.black,
+                      size: 35.0,
+                    );
+                  } else {
+                    return Center(
+                      child: Text('no more item tima'),
+                    );
+                  }
                 })
             : Center(
                 child: Column(
