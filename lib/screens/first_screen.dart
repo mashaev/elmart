@@ -1,10 +1,14 @@
 import 'package:elmart/provider/product_provider.dart';
 import 'package:elmart/resourses/session.dart';
+import 'package:elmart/screens/filter_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
+import 'package:elmart/widgets/custom_list_tile.dart';
 import 'package:elmart/widgets/product_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
+
+import 'favorite_screen.dart';
 
 class FirstScreen extends StatefulWidget {
   static const routeName = '/first';
@@ -16,7 +20,7 @@ class FirstScreen extends StatefulWidget {
 class _FirstScreenState extends State<FirstScreen> {
   ScrollController _scrollController = ScrollController();
   ProductProvider prodProv;
-  var endOfPage = false;
+  // var endOfPage = false;
 
   // checkInternet() {
   //  // Provider.of<ConnectivityProvider>(context, listen: false).methodCheck();
@@ -62,7 +66,8 @@ class _FirstScreenState extends State<FirstScreen> {
         }
       }
     });
-    prodProv.getProduct();
+    prodProv.getProducts();
+    prodProv.getFavorite();
     // setState(() {});
   }
 
@@ -81,7 +86,7 @@ class _FirstScreenState extends State<FirstScreen> {
 
     return Scaffold(
       drawer: Drawer(
-        child: Column(
+        child: ListView(
           children: [
             UserAccountsDrawerHeader(
               accountName: Text('Tima'),
@@ -94,6 +99,19 @@ class _FirstScreenState extends State<FirstScreen> {
                 }
               },
             ),
+            SizedBox(
+              height: 20,
+            ),
+            CustomListTile(
+                Icons.person,
+                'Favorite',
+                () => {
+                      Navigator.pop(context),
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (ctxt) => new FavoriteScreen()))
+                    }),
             // Row(
             //   children: [
             //     Text('login'),
@@ -104,17 +122,18 @@ class _FirstScreenState extends State<FirstScreen> {
         ),
       ),
       appBar: AppBar(
-        // actions: [
-        //   RaisedButton(
-        //       child: Text('getProdc'),
-        //       onPressed: () {
-        //         fetchPost();
-        //       })
-        // ],
+        actions: [
+          IconButton(
+              icon: Icon(Icons.filter),
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (ctx) => FilterScreen()));
+              }),
+        ],
         title: Text('ff'),
       ),
       body: RefreshIndicator(
-        onRefresh: prodProv.getProduct,
+        onRefresh: prodProv.getProducts,
         child: prodProv.hasInternet
             ? GridView.builder(
                 controller: _scrollController,
@@ -122,7 +141,7 @@ class _FirstScreenState extends State<FirstScreen> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2),
                 itemBuilder: (ctx, index) {
-                  cprint('index-----$index');
+                  // cprint('index-----$index');
                   if (prodProv.totalItem == index) {
                     cprint('no more itemData');
                     return Center(
@@ -131,9 +150,9 @@ class _FirstScreenState extends State<FirstScreen> {
                   }
 
                   if (index <= prodProv.loadedPost.length - 1) {
-                    cprint('Total itemData ${prodProv.totalItem}');
-                    cprint(
-                        'Total Loaded itemData ${prodProv.loadedPost.length}');
+                    // cprint('Total itemData ${prodProv.totalItem}');
+                    // cprint(
+                    //     'Total Loaded itemData ${prodProv.loadedPost.length}');
                     return ProductItem(product: prodProv.loadedPost[index]);
                   }
                   if (index == prodProv.loadedPost.length) {
@@ -154,7 +173,7 @@ class _FirstScreenState extends State<FirstScreen> {
                     RaisedButton(
                       child: Text('REtry'),
                       onPressed: () {
-                        prodProv.getProduct();
+                        prodProv.getProducts();
                       },
                     ),
                   ],
