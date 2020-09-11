@@ -1,60 +1,27 @@
-import 'package:elmart/provider/product_provider.dart';
+import 'package:elmart/provider/products_provider.dart';
 import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/filter_screen.dart';
-import 'package:elmart/screens/second_screen.dart';
-import 'package:elmart/widgets/custom_list_tile.dart';
-import 'package:elmart/widgets/product_item.dart';
+import 'package:elmart/screens/products_screen/widgets/product_item.dart';
+import 'package:elmart/screens/drawers_screen/widgets/drawers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:provider/provider.dart';
 
-import 'favorite_screen.dart';
-
-class FirstScreen extends StatefulWidget {
+class ProductsScreen extends StatefulWidget {
   static const routeName = '/first';
 
   @override
   _FirstScreenState createState() => _FirstScreenState();
 }
 
-class _FirstScreenState extends State<FirstScreen> {
+class _FirstScreenState extends State<ProductsScreen> {
   ScrollController _scrollController = ScrollController();
-  ProductProvider prodProv;
-  // var endOfPage = false;
-
-  // checkInternet() {
-  //  // Provider.of<ConnectivityProvider>(context, listen: false).methodCheck();
-  //   fetchPost();
-  // }
-  // Future<bool> check() async {
-  //   var connectivityResult = await Connectivity().checkConnectivity();
-  //   if (connectivityResult == ConnectivityResult.mobile) {
-  //     return true;
-  //   } else if (connectivityResult == ConnectivityResult.wifi) {
-  //     return true;
-  //   }
-  //   return false;
-  // }
-
-  // checkConnection() {
-  //   check().then((intenet) {
-  //     if (intenet != null && intenet) {
-  //       // Internet Present Case
-  //       fetchPost();
-  //     } else {
-  //       setState(() {
-  //         offline = true;
-  //       });
-  //     }
-
-  //     // No-Internet Case
-  //   });
-  // }
+  ProductsProvider prodProv;
 
   @override
   void initState() {
     super.initState();
-    prodProv = Provider.of<ProductProvider>(context, listen: false);
+    prodProv = Provider.of<ProductsProvider>(context, listen: false);
     // checkInternet();
 
     _scrollController.addListener(() {
@@ -78,49 +45,18 @@ class _FirstScreenState extends State<FirstScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ProductProvider prodProv = Provider.of<ProductProvider>(
+    var size = MediaQuery.of(context).size;
+
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    final double itemWidth = size.width / 2;
+    final double aspectRatio = itemWidth / itemHeight;
+
+    ProductsProvider prodProv = Provider.of<ProductsProvider>(
       context,
     );
 
-    //  offline = Provider.of<ConnectivityProvider>(context).offline;
-
     return Scaffold(
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text('Tima'),
-              accountEmail: Text('mashaev@mail.ru'),
-              onDetailsPressed: () {
-                if (session.containsKey('userId')) {
-                  Navigator.of(context).pushNamed(SecondScreen.routeName);
-                } else {
-                  Navigator.of(context).pushNamed('/auth');
-                }
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            CustomListTile(
-                Icons.person,
-                'Favorite',
-                () => {
-                      Navigator.pop(context),
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (ctxt) => new FavoriteScreen()))
-                    }),
-            // Row(
-            //   children: [
-            //     Text('login'),
-            //     IconButton(icon: Icon(Icons.login), onPressed: () {}),
-            //   ],
-            // ),
-          ],
-        ),
-      ),
+      drawer: Drawers(),
       appBar: AppBar(
         actions: [
           IconButton(
@@ -139,7 +75,9 @@ class _FirstScreenState extends State<FirstScreen> {
                 controller: _scrollController,
                 itemCount: prodProv.loadedPost.length + 1,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2),
+                  crossAxisCount: 2,
+                  childAspectRatio: aspectRatio,
+                ),
                 itemBuilder: (ctx, index) {
                   // cprint('index-----$index');
                   if (prodProv.totalItem == index) {

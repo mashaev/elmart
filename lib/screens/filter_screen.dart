@@ -1,4 +1,5 @@
-import 'package:elmart/provider/product_provider.dart';
+import 'package:elmart/provider/products_provider.dart';
+import 'package:elmart/resourses/session.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,11 +14,22 @@ class _FilterScreenState extends State<FilterScreen> {
     {'id': 2, 'title': 'Dilbar'}
   ];
 
+  List<Map> pSizes = [
+    {'id': 35, 'title': 'minsize 35'},
+    {'id': 45, 'title': 'maxsize 45'}
+  ];
+
+  // bool selectedItem = false;
+
   @override
   Widget build(BuildContext context) {
-    ProductProvider prodProv = Provider.of<ProductProvider>(
+    ProductsProvider prodProv = Provider.of<ProductsProvider>(
       context,
     );
+    Map sendFilterData = {
+      'brand': prodProv.filterBrand,
+      'size': prodProv.filterSize
+    };
 
     List<Widget> checkList = [];
     brands.forEach((bmap) {
@@ -33,6 +45,22 @@ class _FilterScreenState extends State<FilterScreen> {
             }
             setState(() {});
           }));
+    });
+
+    checkList.add(SizedBox(
+      height: 20,
+    ));
+
+    pSizes.forEach((size) {
+      checkList.add(RadioListTile(
+        value: size['id'],
+        groupValue: prodProv.filterSize,
+        title: Text(size['title']),
+        onChanged: (val) {
+          cprint('val $val');
+          prodProv.setFilterSize(val);
+        },
+      ));
     });
 
     return Scaffold(
@@ -52,7 +80,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Text('Send'),
                 onPressed: () {
                   prodProv.page = 1;
-                  prodProv.getProducts(filter: {'brand': prodProv.filterBrand});
+                  prodProv.getProducts(filter: sendFilterData);
                   Future.delayed(Duration(seconds: 2), () {
                     Navigator.of(context).pop();
                   });

@@ -32,6 +32,8 @@ class Product {
     this.updatedAt,
     this.picture,
     this.thumbnailPicture,
+    this.colors,
+    this.pictures,
   });
 
   int id;
@@ -54,6 +56,8 @@ class Product {
   int updatedAt;
   String picture;
   String thumbnailPicture;
+  List<ProdColor> colors;
+  List<Picture> pictures;
 
   factory Product.fromMap(Map<String, dynamic> json) => Product(
         id: json["id"],
@@ -76,7 +80,25 @@ class Product {
         updatedAt: json["updated_at"],
         picture: 'https://khanbuyer.ml' + json["picture"],
         thumbnailPicture: 'https://khanbuyer.ml' + json["thumbnailPicture"],
+        colors: getColor(json),
+        pictures: getPic(json),
       );
+
+  static List<ProdColor> getColor(Map<String, dynamic> json) {
+    if (json.containsKey('colors')) {
+      return List<ProdColor>.from(
+          json["colors"].map((x) => ProdColor.fromMap(x)));
+    }
+    return null;
+  }
+
+  static List<Picture> getPic(Map<String, dynamic> json) {
+    if (json.containsKey('pictures')) {
+      return List<Picture>.from(
+          json["pictures"].map((x) => Picture.fromMap(x)));
+    }
+    return null;
+  }
 
   Map<String, dynamic> toMap() => {
         "id": id,
@@ -99,5 +121,63 @@ class Product {
         "updated_at": updatedAt,
         "picture": picture,
         "thumbnailPicture": thumbnailPicture,
+        "colors": List<dynamic>.from(colors.map((x) => x.toMap())),
+        "pictures": List<dynamic>.from(pictures.map((x) => x.toMap())),
+      };
+}
+
+class ProdColor {
+  ProdColor({
+    this.id,
+    this.name,
+    this.code,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  int id;
+  String name;
+  String code;
+  int createdAt;
+  int updatedAt;
+
+  factory ProdColor.fromMap(Map<String, dynamic> json) => ProdColor(
+        id: json["id"],
+        name: json["name"],
+        code: json["code"],
+        createdAt: json["created_at"],
+        updatedAt: json["updated_at"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "id": id,
+        "name": name,
+        "code": code,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+      };
+}
+
+class Picture {
+  Picture({
+    this.picture,
+    this.thumbnailPicture,
+    this.isMain,
+  });
+
+  String picture;
+  String thumbnailPicture;
+  int isMain;
+
+  factory Picture.fromMap(Map<String, dynamic> json) => Picture(
+        picture: 'https://khanbuyer.ml' + json["picture"],
+        thumbnailPicture: 'https://khanbuyer.ml' + json["thumbnailPicture"],
+        isMain: json["isMain"] == null ? null : json["isMain"],
+      );
+
+  Map<String, dynamic> toMap() => {
+        "picture": picture,
+        "thumbnailPicture": thumbnailPicture,
+        "isMain": isMain == null ? null : isMain,
       };
 }

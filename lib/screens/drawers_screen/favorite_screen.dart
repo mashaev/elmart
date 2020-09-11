@@ -1,12 +1,14 @@
-import 'package:elmart/provider/product_provider.dart';
-import 'package:elmart/widgets/product_item.dart';
+import 'package:elmart/provider/products_provider.dart';
+import 'package:elmart/screens/products_screen/widgets/product_item.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class FavoriteScreen extends StatelessWidget {
+  static const routeName = '/favorite';
+
   @override
   Widget build(BuildContext context) {
-    ProductProvider prodProv = Provider.of<ProductProvider>(
+    ProductsProvider prodProv = Provider.of<ProductsProvider>(
       context,
       listen: false,
     );
@@ -15,7 +17,7 @@ class FavoriteScreen extends StatelessWidget {
         title: Text('Favorite'),
       ),
       body: prodProv.hasInternet
-          ? Consumer<ProductProvider>(
+          ? Consumer<ProductsProvider>(
               builder: (ctx, product, _) => GridView.builder(
                   // controller: _scrollController,
                   itemCount: product.favPosts().length,

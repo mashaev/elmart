@@ -1,13 +1,17 @@
-import 'package:elmart/provider/product_provider.dart';
-import 'package:elmart/screens/auth_screen.dart';
-import 'package:elmart/screens/first_screen.dart';
+import 'package:elmart/provider/basket_provider.dart';
+import 'package:elmart/provider/products_provider.dart';
+import 'package:elmart/screens/auth_screen/auth_screen.dart';
+import 'package:elmart/screens/basket_screen/basket_screen.dart';
+import 'package:elmart/screens/drawers_screen/favorite_screen.dart';
+import 'package:elmart/screens/product_detail_screen/product_detail_screen.dart';
+import 'package:elmart/screens/products_screen/products_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
-//import 'package:elmart/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'provider/auth_provider.dart';
+import 'provider/product_provider.dart';
 import 'resourses/session.dart';
 
 void main() async {
@@ -23,10 +27,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<Auth>(create: (_) => Auth()),
+        ChangeNotifierProvider<ProductsProvider>(
+            create: (_) => ProductsProvider()),
         ChangeNotifierProvider<ProductProvider>(
             create: (_) => ProductProvider()),
-        // ChangeNotifierProvider<ConnectivityProvider>(
-        //     create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider<BasketProvider>(create: (_) => BasketProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -34,11 +39,15 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        home: FirstScreen(),
+        home: ProductsScreen(),
         routes: {
           SecondScreen.routeName: (ctx) => SecondScreen(),
+          ProductsScreen.routeName: (ctx) => ProductsScreen(),
+
           '/auth': (ctx) => AuthScreen(),
-          // '/first': (ctx) => FirstScreen(),
+          ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
+          FavoriteScreen.routeName: (ctx) => FavoriteScreen(),
+          BasketScreen.routeName: (ctx) => BasketScreen(),
           // '/auth': (ctx) => AuthScreen(),
         },
       ),

@@ -1,5 +1,5 @@
 import 'package:elmart/provider/auth_provider.dart';
-import 'package:elmart/screens/first_screen.dart';
+import 'package:elmart/screens/products_screen/products_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -18,7 +18,7 @@ class SecondScreen extends StatelessWidget {
               onPressed: () {
                 Provider.of<Auth>(context, listen: false).logout();
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (contex) => FirstScreen()));
+                    MaterialPageRoute(builder: (contex) => ProductsScreen()));
               }),
         ],
         title: Text('I am here'),
