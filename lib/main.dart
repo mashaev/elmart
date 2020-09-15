@@ -1,4 +1,5 @@
 import 'package:elmart/provider/basket_provider.dart';
+import 'package:elmart/provider/order_provider.dart';
 import 'package:elmart/provider/products_provider.dart';
 import 'package:elmart/screens/auth_screen/auth_screen.dart';
 import 'package:elmart/screens/basket_screen/basket_screen.dart';
@@ -32,6 +33,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ProductProvider>(
             create: (_) => ProductProvider()),
         ChangeNotifierProvider<BasketProvider>(create: (_) => BasketProvider()),
+        ChangeNotifierProvider<OrderProvider>(create: (_) => OrderProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',

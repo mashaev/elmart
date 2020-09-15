@@ -1,3 +1,4 @@
+import 'package:elmart/screens/basket_screen/widget/order_button.dart';
 import 'package:elmart/screens/basket_screen/widget/products_list.dart';
 import 'package:elmart/screens/drawers_screen/widgets/drawers.dart';
 import 'package:flutter/material.dart';
@@ -24,9 +25,10 @@ class BasketScreen extends StatelessWidget {
       body: Center(
         child: ProductsList(),
       ),
-      bottomNavigationBar: Container(height: 60, child: Text('de')
-          // OrderButton(),
-          ),
+      bottomNavigationBar: Container(
+        height: 60,
+        child: OrderButton(),
+      ),
     );
   }
 }

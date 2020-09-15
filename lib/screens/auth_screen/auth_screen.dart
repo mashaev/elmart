@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:elmart/model/user.dart';
 import 'package:elmart/provider/auth_provider.dart';
 import 'package:elmart/resourses/session.dart';
+import 'package:elmart/resourses/validator.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -342,11 +343,7 @@ class _AuthCardState extends State<AuthCard> {
         TextFormField(
           decoration: InputDecoration(labelText: 'E-Mail'),
           keyboardType: TextInputType.emailAddress,
-          validator: (value) {
-            if (value.isEmpty || !value.contains('@')) {
-              return 'Invalid email!';
-            }
-          },
+          validator: emailValidation,
           onSaved: (value) {
             _authData['email'] = value;
           },
@@ -400,11 +397,7 @@ class _AuthCardState extends State<AuthCard> {
         TextFormField(
           decoration: InputDecoration(labelText: 'Email'),
           keyboardType: TextInputType.text,
-          validator: (value) {
-            if (value.isEmpty) {
-              return 'Invalid name!';
-            }
-          },
+          validator: emailValidation,
           onSaved: (value) {
             _authData['email'] = value;
           },

@@ -11,39 +11,41 @@ class ProductsList extends StatelessWidget {
       List<Widget> contColor = [];
       prod.colors
           .where((color) => (color.id != 0 && map.containsKey(color.id)))
-          .map((c) => contColor.add(
-                Container(
-                  padding: const EdgeInsets.only(top: 5),
-                  child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey,
-                                    blurRadius: 2,
-                                  ),
-                                ],
-                                color: Color(
-                                  int.parse('0xFF${c.code.substring(1)}'),
+          .map(
+            (c) => contColor.add(
+              Container(
+                padding: const EdgeInsets.only(top: 5),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey,
+                                  blurRadius: 2,
                                 ),
+                              ],
+                              color: Color(
+                                int.parse('0xFF${c.code.substring(1)}'),
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 10),
-                              child: Text(c.name),
-                            )
-                          ],
-                        ),
-                      ]),
-                ),
-              ))
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 10),
+                            child: Text(c.name),
+                          )
+                        ],
+                      ),
+                    ]),
+              ),
+            ),
+          )
           .toList();
       colorMap[prod.id] = contColor;
     });
@@ -93,6 +95,8 @@ class ProductsList extends StatelessWidget {
     List<Widget> prodList = [];
     bp.ordersMap.forEach((prod, amnt) {
       Widget myCont = Container(
+        // height: 330,
+        // padding: EdgeInsets.only(top: 15, bottom: 5),
         margin: const EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -126,6 +130,7 @@ class ProductsList extends StatelessWidget {
                   children: [
                     Container(
                       width: double.infinity,
+                      // height: 120,
                       margin: const EdgeInsets.only(bottom: 10),
                       padding: const EdgeInsets.only(bottom: 5),
                       decoration: BoxDecoration(
@@ -136,7 +141,7 @@ class ProductsList extends StatelessWidget {
                       child: Text(
                         prod.name,
                         // products[i]['name'],
-                        style: Theme.of(context).textTheme.headline4,
+                        style: Theme.of(context).textTheme.headline5,
                       ),
                     ),
                     ...colorMap[prod.id],
@@ -152,7 +157,7 @@ class ProductsList extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Общая сумма:'),
+                          Expanded(child: Text('Общая сумма:')),
                           Expanded(child: Text(bp.totalPrice().toString()))
                         ],
                       ),

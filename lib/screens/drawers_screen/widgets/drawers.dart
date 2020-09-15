@@ -1,6 +1,7 @@
 import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/basket_screen/basket_screen.dart';
 import 'package:elmart/screens/drawers_screen/favorite_screen.dart';
+import 'package:elmart/screens/order_waiting_screen/order_waiting_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -52,6 +53,19 @@ class Drawers extends StatelessWidget {
                         context,
                         new MaterialPageRoute(
                             builder: (ctxt) => new BasketScreen()))
+                  }),
+          SizedBox(
+            height: 20,
+          ),
+          CustomListTile(
+              Icons.online_prediction_sharp,
+              'Заказы',
+              () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (ctxt) => new OrderWaitingScreen()))
                   }),
           // Row(
           //   children: [

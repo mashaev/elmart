@@ -7,13 +7,13 @@ class BasketProvider with ChangeNotifier {
 
   addToBasket(Product product, Map amount) {
     if (ordersMap.containsKey(product)) {
-      ordersMap.update(product, (value) => amount);
+      ordersMap.update(product, (value) => value);
     } else {
       ordersMap.putIfAbsent(product, () => amount);
     }
 
     cprint('amount$amount');
-    cprint('amount$ordersMap');
+    cprint('amount${ordersMap[product][amount]}');
 
     notifyListeners();
   }
