@@ -1,7 +1,9 @@
 import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/basket_screen/basket_screen.dart';
+import 'package:elmart/screens/catalog_screen/catalog_screen.dart';
 import 'package:elmart/screens/drawers_screen/favorite_screen.dart';
 import 'package:elmart/screens/order_waiting_screen/order_waiting_screen.dart';
+import 'package:elmart/screens/products_screen/products_screen.dart';
 import 'package:elmart/screens/second_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +30,19 @@ class Drawers extends StatelessWidget {
               }
             },
           ),
+          SizedBox(
+            height: 20,
+          ),
+          CustomListTile(
+              Icons.portrait_rounded,
+              'Product',
+              () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (ctxt) => new ProductsScreen()))
+                  }),
           SizedBox(
             height: 20,
           ),
@@ -66,6 +81,20 @@ class Drawers extends StatelessWidget {
                         context,
                         new MaterialPageRoute(
                             builder: (ctxt) => new OrderWaitingScreen()))
+                  }),
+          SizedBox(
+            height: 20,
+          ),
+          CustomListTile(
+              Icons.cake,
+              'Каталог',
+              () => {
+                    Navigator.pop(context),
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (ctxt) => new CatalogScreen()),
+                    ),
                   }),
           // Row(
           //   children: [

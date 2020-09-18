@@ -9,6 +9,7 @@ class OrderProvider with ChangeNotifier {
   bool hasInternet = false;
 
   List orders = [];
+  Map order = {};
 
   Future<void> makeOrder(contactData, orderBasket) async {
     hasInternet = await DataConnectionChecker().hasConnection;
@@ -124,6 +125,39 @@ class OrderProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('deleteOrder error: $e');
+    }
+    return null;
+  }
+
+  Future<void> getOrder(int id) async {
+    cprint('id $id');
+    hasInternet = await DataConnectionChecker().hasConnection;
+    if (!hasInternet) {
+      notifyListeners();
+      return null;
+    }
+    String token = session.getString('authKey');
+
+    try {
+      final url = 'https://khanbuyer.ml/api/orders/$id?expand=items';
+      // cprint('url $url');
+      final response = await http.get(
+        url,
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      final responseData = json.decode(response.body);
+      // List resultList = responseData as List;
+      // resultList.forEach((element) {
+      //   favoriteProduct.add(element['id']);
+      // });
+      // cprint('getOrder responseData $responseData');
+
+      order = responseData;
+      cprint('deleteOrder orders ${order.length}');
+
+      notifyListeners();
+    } catch (e) {
+      print('getOrder error: $e');
     }
     return null;
   }

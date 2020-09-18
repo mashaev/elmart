@@ -1,3 +1,4 @@
+import 'package:elmart/provider/product_provider.dart';
 import 'package:elmart/provider/products_provider.dart';
 import 'package:elmart/resourses/session.dart';
 import 'package:elmart/screens/filter_screen.dart';
@@ -21,6 +22,7 @@ class _FirstScreenState extends State<ProductsScreen> {
   @override
   void initState() {
     super.initState();
+    cprint('Product screen INIT-------');
     prodProv = Provider.of<ProductsProvider>(context, listen: false);
     // checkInternet();
 
@@ -33,6 +35,10 @@ class _FirstScreenState extends State<ProductsScreen> {
         }
       }
     });
+    // if (prodProv.filterCategory == null) {
+    prodProv.clearFilter();
+    // }
+
     prodProv.getProducts();
     prodProv.getFavorite();
     // setState(() {});
@@ -40,6 +46,7 @@ class _FirstScreenState extends State<ProductsScreen> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -66,44 +73,52 @@ class _FirstScreenState extends State<ProductsScreen> {
                     .push(MaterialPageRoute(builder: (ctx) => FilterScreen()));
               }),
         ],
-        title: Text('ff'),
+        title: Text('Продукты'),
       ),
       body: RefreshIndicator(
         onRefresh: prodProv.getProducts,
         child: prodProv.hasInternet
-            ? GridView.builder(
-                controller: _scrollController,
-                itemCount: prodProv.loadedPost.length + 1,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: aspectRatio,
-                ),
-                itemBuilder: (ctx, index) {
-                  // cprint('index-----$index');
-                  if (prodProv.totalItem == index) {
-                    cprint('no more itemData');
-                    return Center(
-                      child: Text('no more itemData bro'),
-                    );
-                  }
+            ? Consumer<ProductsProvider>(
+                builder: (context, provider, _) {
+                  return provider.isLoading
+                      ? Center(child: CircularProgressIndicator())
+                      : GridView.builder(
+                          controller: _scrollController,
+                          itemCount: prodProv.loadedPost.length + 1,
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: aspectRatio,
+                          ),
+                          itemBuilder: (ctx, index) {
+                            // cprint('index-----$index');
+                            if (prodProv.totalItem == index) {
+                              cprint('no more itemData');
+                              return Center(
+                                child: Text('no more itemData bro'),
+                              );
+                            }
 
-                  if (index <= prodProv.loadedPost.length - 1) {
-                    // cprint('Total itemData ${prodProv.totalItem}');
-                    // cprint(
-                    //     'Total Loaded itemData ${prodProv.loadedPost.length}');
-                    return ProductItem(product: prodProv.loadedPost[index]);
-                  }
-                  if (index == prodProv.loadedPost.length) {
-                    return SpinKitThreeBounce(
-                      color: Colors.black,
-                      size: 35.0,
-                    );
-                  } else {
-                    return Center(
-                      child: Text('no more item tima'),
-                    );
-                  }
-                })
+                            if (index <= prodProv.loadedPost.length - 1) {
+                              // cprint('Total itemData ${prodProv.totalItem}');
+                              // cprint(
+                              //     'Total Loaded itemData ${prodProv.loadedPost.length}');
+                              return ProductItem(
+                                  product: prodProv.loadedPost[index]);
+                            }
+                            if (index == prodProv.loadedPost.length) {
+                              return SpinKitThreeBounce(
+                                color: Colors.black,
+                                size: 35.0,
+                              );
+                            } else {
+                              return Center(
+                                child: Text('no more item tima'),
+                              );
+                            }
+                          });
+                },
+              )
             : Center(
                 child: Column(
                   children: [

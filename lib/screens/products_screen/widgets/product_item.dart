@@ -42,9 +42,7 @@ class ProductItem extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Expanded(
-              child: ProductImage(product: product),
-            ),
+            Expanded(child: ProductImage(product: product)),
             ProductDetails(product: product)
           ],
         ),

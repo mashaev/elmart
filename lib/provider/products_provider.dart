@@ -11,11 +11,13 @@ class ProductsProvider with ChangeNotifier {
   List<int> favoriteProduct = [];
   List<int> filterBrand = [];
   int filterSize;
+  int filterCategory;
 
   int page = 1;
   int perPage = 8;
   int pageCount;
   bool hasInternet = false;
+  bool isLoading = false;
   int totalItem = 0;
 
   incrementPage() {
@@ -86,26 +88,40 @@ class ProductsProvider with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      print('getFavorite error:  ' + e);
+      print('getFavorite error:  $e');
     }
     return null;
   }
 
-  Future<void> getProducts({Map filter}) async {
-    // cprint('getProducts page $page');
+  void clearFilter({bool notif = false}) {
+    filterBrand = [];
+    filterCategory = null;
+    filterSize = null;
+    if (notif) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> getProducts() async {
+    cprint('getProducts filterCategory $filterCategory');
     hasInternet = await DataConnectionChecker().hasConnection;
     if (!hasInternet) {
       cprint('getProducts no internet');
       notifyListeners();
       return null;
     }
-
+    isLoading = true;
+    notifyListeners();
     String url =
         'https://khanbuyer.ml/api/products?page=$page&per-page=$perPage';
-    if (filter != null && filter.containsKey('brand')) {
-      url = url + '&ProductSearch[brand_id]=${filter['brand'][0]}';
-    } else if (filter != null && filter.containsKey('size')) {
-      url = url + '&ProductSearch[size_minimum]=${filter['size']}';
+    if (filterBrand.isNotEmpty) {
+      url = url + '&ProductSearch[brand_id]=${filterBrand[0]}';
+    }
+    if (filterSize != null) {
+      url = url + '&ProductSearch[size_minimum]=$filterSize';
+    }
+    if (filterCategory != null) {
+      url = url + '&ProductSearch[category_id]=$filterCategory';
     }
 
     try {
@@ -130,6 +146,7 @@ class ProductsProvider with ChangeNotifier {
         loadedPost = products;
       }
       Future.delayed(Duration(seconds: 2), () {
+        isLoading = false;
         notifyListeners();
       });
     } catch (e) {

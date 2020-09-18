@@ -26,10 +26,10 @@ class _FilterScreenState extends State<FilterScreen> {
     ProductsProvider prodProv = Provider.of<ProductsProvider>(
       context,
     );
-    Map sendFilterData = {
-      'brand': prodProv.filterBrand,
-      'size': prodProv.filterSize
-    };
+    // Map sendFilterData = {
+    //   'brand': prodProv.filterBrand,
+    //   'size': prodProv.filterSize
+    // };
 
     List<Widget> checkList = [];
     brands.forEach((bmap) {
@@ -66,6 +66,14 @@ class _FilterScreenState extends State<FilterScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Filter'),
+        actions: [
+          IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: () {
+                Provider.of<ProductsProvider>(context, listen: false)
+                    .clearFilter(notif: true);
+              }),
+        ],
       ),
       body: Stack(
         children: [
@@ -80,7 +88,7 @@ class _FilterScreenState extends State<FilterScreen> {
                 child: Text('Send'),
                 onPressed: () {
                   prodProv.page = 1;
-                  prodProv.getProducts(filter: sendFilterData);
+                  prodProv.getProducts();
                   Future.delayed(Duration(seconds: 2), () {
                     Navigator.of(context).pop();
                   });
