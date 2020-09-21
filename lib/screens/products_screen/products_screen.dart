@@ -35,9 +35,8 @@ class _FirstScreenState extends State<ProductsScreen> {
         }
       }
     });
-    // if (prodProv.filterCategory == null) {
-    prodProv.clearFilter();
-    // }
+
+    prodProv.clearFilter(notif: true);
 
     prodProv.getProducts();
     prodProv.getFavorite();
@@ -79,46 +78,44 @@ class _FirstScreenState extends State<ProductsScreen> {
         onRefresh: prodProv.getProducts,
         child: prodProv.hasInternet
             ? Consumer<ProductsProvider>(
-                builder: (context, provider, _) {
-                  return provider.isLoading
-                      ? Center(child: CircularProgressIndicator())
-                      : GridView.builder(
-                          controller: _scrollController,
-                          itemCount: prodProv.loadedPost.length + 1,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: aspectRatio,
-                          ),
-                          itemBuilder: (ctx, index) {
-                            // cprint('index-----$index');
-                            if (prodProv.totalItem == index) {
-                              cprint('no more itemData');
-                              return Center(
-                                child: Text('no more itemData bro'),
-                              );
-                            }
+                builder: (cntx, provider, _) => provider.isLoading
+                    ? Center(
+                        child: CircularProgressIndicator(),
+                      )
+                    : GridView.builder(
+                        controller: _scrollController,
+                        itemCount: prodProv.loadedPost.length + 1,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: aspectRatio,
+                        ),
+                        itemBuilder: (ctx, index) {
+                          // cprint('index-----$index');
+                          if (prodProv.totalItem == index) {
+                            cprint('no more itemData');
+                            return Center(
+                              child: Text('no more itemData bro'),
+                            );
+                          }
 
-                            if (index <= prodProv.loadedPost.length - 1) {
-                              // cprint('Total itemData ${prodProv.totalItem}');
-                              // cprint(
-                              //     'Total Loaded itemData ${prodProv.loadedPost.length}');
-                              return ProductItem(
-                                  product: prodProv.loadedPost[index]);
-                            }
-                            if (index == prodProv.loadedPost.length) {
-                              return SpinKitThreeBounce(
-                                color: Colors.black,
-                                size: 35.0,
-                              );
-                            } else {
-                              return Center(
-                                child: Text('no more item tima'),
-                              );
-                            }
-                          });
-                },
-              )
+                          if (index <= prodProv.loadedPost.length - 1) {
+                            // cprint('Total itemData ${prodProv.totalItem}');
+                            // cprint(
+                            //     'Total Loaded itemData ${prodProv.loadedPost.length}');
+                            return ProductItem(
+                                product: prodProv.loadedPost[index]);
+                          }
+                          if (index == prodProv.loadedPost.length) {
+                            return SpinKitThreeBounce(
+                              color: Colors.black,
+                              size: 35.0,
+                            );
+                          } else {
+                            return Center(
+                              child: Text('no more item tima'),
+                            );
+                          }
+                        }))
             : Center(
                 child: Column(
                   children: [
@@ -133,7 +130,7 @@ class _FirstScreenState extends State<ProductsScreen> {
                 ),
               ),
       ),
-      // This trailing comma makes auto-formatting nicer for build methods.
     );
+    // This trailing comma makes auto-formatting nicer for build methods.
   }
 }

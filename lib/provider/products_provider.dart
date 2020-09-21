@@ -79,12 +79,13 @@ class ProductsProvider with ChangeNotifier {
       );
       final responseData = json.decode(response.body);
       List resultList = responseData as List;
+
       resultList.forEach((element) {
         favoriteProduct.add(element['id']);
       });
       // cprint('favoriteProduct responseData ${favoriteProduct.length}');
 
-      // cprint('getFavorite responseData $responseData');
+      cprint('getFavorite responseData $responseData');
 
       notifyListeners();
     } catch (e) {
@@ -98,7 +99,9 @@ class ProductsProvider with ChangeNotifier {
     filterCategory = null;
     filterSize = null;
     if (notif) {
-      notifyListeners();
+      Future.delayed(Duration.zero, () async {
+        notifyListeners();
+      });
     }
   }
 
@@ -111,16 +114,22 @@ class ProductsProvider with ChangeNotifier {
       return null;
     }
     isLoading = true;
-    notifyListeners();
+    // notifyListeners();
     String url =
         'https://khanbuyer.ml/api/products?page=$page&per-page=$perPage';
     if (filterBrand.isNotEmpty) {
+      isLoading = true;
+      notifyListeners();
       url = url + '&ProductSearch[brand_id]=${filterBrand[0]}';
     }
     if (filterSize != null) {
+      isLoading = true;
+      notifyListeners();
       url = url + '&ProductSearch[size_minimum]=$filterSize';
     }
     if (filterCategory != null) {
+      isLoading = true;
+      notifyListeners();
       url = url + '&ProductSearch[category_id]=$filterCategory';
     }
 
@@ -141,8 +150,12 @@ class ProductsProvider with ChangeNotifier {
           resultList.map((prod) => Product.fromMap(prod)).toList();
       // cprint('getProducts products $products');
       if (page > 1) {
+        // isLoading = false;
+        // notifyListeners();
         loadedPost.addAll(products);
       } else {
+        // isLoading = false;
+        // notifyListeners();
         loadedPost = products;
       }
       Future.delayed(Duration(seconds: 2), () {

@@ -31,9 +31,10 @@ class CatalogList extends StatelessWidget {
                       provider.catalogs[name][index]['id'];
                   productsP.page = 1;
                   productsP.getProducts();
-                  //Navigator.pushNamed(context, ProductsScreen.routeName);
-                  // .then((value) => Navigator.pop(context));
+
+                  // Future.delayed(Duration(seconds: 3), () async {
                   Navigator.pop(context);
+                  // });
                 },
                 child: CatalogItem(
                   id: provider.catalogs[name][index]['id'],

@@ -8,6 +8,12 @@ class FavoriteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
+    final double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    final double itemWidth = size.width / 2;
+    final double aspectRatio = itemWidth / itemHeight;
+
     ProductsProvider prodProv = Provider.of<ProductsProvider>(
       context,
       listen: false,
@@ -22,7 +28,9 @@ class FavoriteScreen extends StatelessWidget {
                   // controller: _scrollController,
                   itemCount: product.favPosts().length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2),
+                    crossAxisCount: 2,
+                    childAspectRatio: aspectRatio,
+                  ),
                   itemBuilder: (ctx, index) {
                     return ProductItem(product: product.favPosts()[index]);
                   }),
